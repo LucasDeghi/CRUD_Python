@@ -1,11 +1,21 @@
 from django.shortcuts import render, redirect
 from app.forms import PessoasForm
 from app.models import Pessoas
+from django.core.paginator import Paginator
 
 # Create your views here.
 def home(request):
     data = {}
-    data['db'] = Pessoas.objects.all()
+    search = request.GET.get('search')
+    if search:
+        data['db'] = Pessoas.objects.filter(Nome__icontains=search)
+    else:
+        data['db'] = Pessoas.objects.all()
+
+    #all = Pessoas.objects.all()
+    #paginator = Paginator(all, 5)
+    #pages = request.GET.get('pagina')
+    #data['db'] = paginator.get_page(pages)
     return render(request, 'index.html', data)
 
 def form(request):
@@ -43,3 +53,5 @@ def delete(request, pk):
     db = Pessoas.objects.get(pk=pk)
     db.delete()
     return redirect('home')
+
+
